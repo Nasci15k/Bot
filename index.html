@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nasci15k Puxar Dados</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fff;
+            color: #000;
+            text-align: center;
+        }
+        .messages {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #000;
+            height: 300px;
+            overflow-y: auto;
+        }
+        .buttons {
+            margin-top: 20px;
+        }
+        .btn {
+            padding: 10px 20px;
+            background-color: red;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background-color: darkred;
+        }
+    </style>
+</head>
+<body>
+    <h1>Nasci15k Puxar Dados</h1>
+    <div class="messages" id="messages"></div>
+    <div class="buttons" id="buttons"></div>
+
+    <input type="text" id="userMessage" placeholder="Digite um comando..." />
+    <button onclick="sendMessage()">Enviar</button>
+
+    <script>
+        let sessionId = 'user_1'; // Identificador único para cada usuário
+
+        // Função para exibir as mensagens
+        function displayMessages(messages) {
+            const messageContainer = document.getElementById('messages');
+            messageContainer.innerHTML = '';
+            messages.forEach(message => {
+                const messageDiv = document.createElement('div');
+                messageDiv.innerText = message;
+                messageContainer.appendChild(messageDiv);
+            });
+        }
+
+        // Função para exibir os botões
+        function displayButtons(buttons) {
+            const buttonContainer = document.getElementById('buttons');
+            buttonContainer.innerHTML = '';
+            buttons.forEach(buttonText => {
+                const button = document.createElement('button');
+                button.innerText = buttonText;
+                button.className = 'btn';
+                button.onclick = () => handleButtonClick(buttonText);
+                buttonContainer.appendChild(button);
+            });
+        }
+
+        // Função para enviar mensagem ao bot
+        function sendMessage() {
+            const userMessage = document.getElementById('userMessage').value;
+            if (userMessage) {
+                fetch('https://681065d9-a140-48d7-8c90-35effb18c96e-00-bxiexrzc39q4.kirk.replit.dev/send-message', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message: userMessage })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    getMessages();
+                });
+            }
+        }
+
+        // Função para buscar mensagens e botões do servidor
+        function getMessages() {
+            fetch('https://681065d9-a140-48d7-8c90-35effb18c96e-00-bxiexrzc39q4.kirk.replit.dev/get-messages?sessionId=' + sessionId)
+            .then(response => response.json())
+            .then(data => {
+                displayMessages(data.messages);
+                displayButtons(data.buttons);
+            });
+        }
+
+        // Função para lidar com clique no botão
+        function handleButtonClick(buttonText) {
+            fetch('https://681065d9-a140-48d7-8c90-35effb18c96e-00-bxiexrzc39q4.kirk.replit.dev/send-message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: buttonText })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                getMessages();
+            });
+        }
+
+        // Carregar mensagens iniciais
+        getMessages();
+    </script>
+</body>
+</html>
